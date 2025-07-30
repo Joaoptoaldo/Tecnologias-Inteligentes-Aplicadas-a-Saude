@@ -1,0 +1,15 @@
+TIAS
+    - github pessoal da disciplina - a criar
+        - teoria e anotações - avaliação teórica e semanal
+    - plano de aula - conteúdo
+        - INTELIGÊNCIA ARTIFICIAL
+            - Sistemas de Comportamento Inteligente
+                - base de dados -> estruturada (banco de dados, json, xml, csv, yaml); não estruturados (html, .txt, .md, banco de dados não relacional)
+                    - dados -> informação -> conhecimento -> experiências
+                - raciocínio automatizado -> dedução ou indução -> motores de inferência
+                - reconhecimento de padrões -> redes neurais -> treinamento -> aprendizado
+ 
+    - tarefa próxima aula
+        - pesquisar no site do tfgonline - https://tcconline.lapinf.ufn.edu.br/
+            - trabalhos de TFG ou TCC que investigaram sobre Tecnologias Inteligentes Aplicadas à Saúde
+            - categorizar se o trabalho foi de: recomendação, predição, diagnóstico, monitoramento
