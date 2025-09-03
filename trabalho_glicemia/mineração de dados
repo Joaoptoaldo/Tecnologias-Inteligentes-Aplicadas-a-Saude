@@ -1,1 +1,34 @@
+GLICEMIA:
+  Qtd valores válidos: 700
+  Média: 1.21
+  Mediana: 1.0
+  Mínimo: 1.0
+  Máximo: 2.0
 
+KCAL:
+  Qtd valores válidos: 724
+  Média: 0.84
+  Mediana: 1.0
+  Mínimo: 0
+  Máximo: 2
+
+CARB:
+  Qtd valores válidos: 447
+  Média: 1.85
+  Mediana: 2.0
+  Mínimo: 0.0
+  Máximo: 2.0
+
+INSULINA:
+  Qtd valores válidos: 724
+  Média: 8.51
+  Mediana: 8.0
+  Mínimo: 4
+  Máximo: 12
+
+SONO:
+  Qtd valores válidos: 723
+  Média: 3.92
+  Mediana: 4.0
+  Mínimo: 0.0
+  Máximo: 5.0
