@@ -60,7 +60,7 @@ plt.ylabel("Real")
 plt.title("Matriz de Confusão - Predição de Glicemia")
 plt.show()
 
-# 11) Importância das variáveis
+# importância das variáveis
 importancias = modelo.feature_importances_
 plt.figure(figsize=(6,4))
 plt.bar(X.columns, importancias, color="skyblue")
