@@ -1,5 +1,5 @@
-# PROJETO: Predição de glicemia com machine learning
-# usando pandas, numpy, scikit-learn e matplotlib
+# PROJETO: Predição de GLICOSE com machine learning
+# Usando pandas, numpy, scikitlearn e matplotlib
 
 import pandas as pd
 import numpy as np
@@ -16,30 +16,33 @@ print("Colunas do arquivo:", df.columns.tolist())
 print("\nExemplo de dados:\n", df.head())
 
 # mapeia variáveis categóricas para números
-mapa_glicemia = {"Baixo": 0, "Normal": 1, "Acima": 2}   # <-- corrigido
-mapa_kcal = {"Abaixo": 0, "Recomendado": 1, "Acima": 2} # <-- adicionado "Recomendado"
+mapa_glicose = {"Baixo": 0, "Normal": 1, "Acima": 2}   # alvo
+mapa_kcal = {"Abaixo": 0, "Recomendado": 1, "Acima": 2}
 mapa_carb = {"Abaixo": 0, "Normal": 1, "Acima": 2}
 
-df["GLICEMIA"] = df["GLICEMIA"].map(mapa_glicemia)
+# renomeia coluna GLICEMIA para GLICOSE (variável alvo)
+df = df.rename(columns={"GLICEMIA": "GLICOSE"})
+
+df["GLICOSE"] = df["GLICOSE"].map(mapa_glicose)
 df["KCAL"] = df["KCAL"].map(mapa_kcal)
 df["CARB"] = df["CARB"].map(mapa_carb)
 
-# remove colunas desnecessárias Unnamed 
+# remove colunas desnecessárias unnamed
 df = df.drop(columns=["Unnamed: 20", "Unnamed: 21"], errors="ignore")
 
-# remove linhas com valores ausentes em colunas
-df = df.dropna(subset=["GLICEMIA", "SONO", "KCAL", "CARB", "padel"])
+# remove as linhas com valores ausentes em colunas importantes
+df = df.dropna(subset=["GLICOSE", "SONO", "KCAL", "CARB", "padel"])
 
 print("\nTamanho final da base após limpeza:", df.shape)
 
 # seleção das variáveis (X = entradas, y = alvo)
 X = df[["SONO", "KCAL", "CARB", "padel"]]
-y = df["GLICEMIA"]
+y = df["GLICOSE"]
 
 # separa treino e teste
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# treina modelo 
+# treinar modelo 
 # Decision Tree
 modelo = DecisionTreeClassifier(random_state=42)
 modelo.fit(X_train, y_train)
@@ -57,7 +60,7 @@ sns.heatmap(confusion_matrix(y_test, y_pred), annot=True, fmt="d", cmap="Blues",
             xticklabels=["Baixo","Normal","Acima"], yticklabels=["Baixo","Normal","Acima"])
 plt.xlabel("Previsto")
 plt.ylabel("Real")
-plt.title("Matriz de Confusão - Predição de Glicemia")
+plt.title("Matriz de Confusão - Predição de Glicose")
 plt.show()
 
 # importância das variáveis
