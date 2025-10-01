@@ -1,7 +1,7 @@
 # Plano de Integração de dados com IA
 
--> Transformação de dados:
-    A criptografia transforma informações legíveis (texto simples) em um formato cifrado, que parece um código sem sentido.
+-> Objetivo:
+    Integrar dados de um sistema local de saúde com uma camada de IA (Gemini ou OpenAI), utilizando **JSON como formato de troca de dados**.
     
         -sistema ----> JSON ------> gemini/opneai
          1- paciente                       |
