@@ -5,7 +5,7 @@
     
         -sistema ----> JSON ------> gemini/opneai
          1- paciente                       |
-	       2- alimentação   <--------------JSON-->alimento (descrição, unidade, calorias, carboidratos)               
+	     2- alimentação   <--------------JSON-->alimento (descrição, unidade, calorias, carboidratos)               
 	                                             insulina (nome, princioativo) 
 
 
