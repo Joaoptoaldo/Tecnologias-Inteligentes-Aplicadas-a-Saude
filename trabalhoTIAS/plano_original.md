@@ -10,10 +10,6 @@
 
 
 
-1- Paciente ---> insulinas
-	             g por insulina 
-		         unidade por glicemia
+1- Paciente ---> (insulinas, g por insulina, unidade por glicemia)
 
-2- Alimentação -> texto puro
-                  nome insulina
-		          qtd de unidades
+2- Alimentação -> (texto puro, nome insulina, qtd de unidades)
