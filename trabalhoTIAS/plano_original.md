@@ -6,7 +6,7 @@
     ->Sistema ----------> JSON ------>gemini/openai
          1- paciente                       |
 	     2- alimentação <-----------------JSON-->alimento (descrição, unidade, calorias, carboidratos)               
-	                                            insulina (nome, princioativo) 
+	                                            insulina (nome, princípio ativo) 
 
 
 
