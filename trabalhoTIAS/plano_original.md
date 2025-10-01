@@ -3,9 +3,9 @@
 -> Objetivo: 
       Integrar dados de um sistema local de saúde com uma camada de IA (Gemini ou OpenAI), utilizando **JSON como formato de troca de dados**.
     
-        ->Sistema ----> JSON ------> gemini/openai
+    ->Sistema ----------> JSON ------>gemini/openai
          1- paciente                       |
-	     2- alimentação <----------------JSON-->alimento (descrição, unidade, calorias, carboidratos)               
+	     2- alimentação <-----------------JSON-->alimento (descrição, unidade, calorias, carboidratos)               
 	                                            insulina (nome, princioativo) 
 
 
