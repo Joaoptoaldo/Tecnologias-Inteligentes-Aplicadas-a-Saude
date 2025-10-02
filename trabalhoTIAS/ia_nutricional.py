@@ -8,7 +8,7 @@ api_key = os.getenv("COLOQUE_SUA_API_KEY_AQUI")
 print("Chave carregada:", api_key)
 
 # ------------------------------
-# Cliente Gemini
+# Cliente 
 # ------------------------------
 client = genai.Client(api_key="COLOQUE_SUA_API_KEY_AQUI")
 
@@ -25,7 +25,7 @@ def montar_json(medicamentos, bolus_alimentar, bolus_correcao, glicemia_atual, d
     }
 
 # ------------------------------
-# Função para desmontar JSON (ajustada para resposta da IA)
+# Função para desmontar JSON ajustada para resposta da IA
 # ------------------------------
 def desmontar_json(resposta_json):
     """
@@ -34,26 +34,26 @@ def desmontar_json(resposta_json):
     - Remover backticks e espaços extras
     """
     try:
-        # Remove backticks e palavra "json"
+        # remove backticks e palavra "json"
         resposta_json = resposta_json.replace("```json", "").replace("```", "").strip()
         
         data = json.loads(resposta_json)
         
-        # Caso 'nome_do_alimento' exista
+        # caso 'nome_do_alimento' exista
         if "nome_do_alimento" in data:
             nome = data["nome_do_alimento"]
-            # Se for lista, mantém; se for string, transforma em lista
+            # se for lista, mantém, e se for string, transforma ela em lista
             if isinstance(nome, list):
                 alimentos = nome
             else:
-                # Divide a string por vírgula e remove espaços extras
+                # divide a string por vírgula e remove espaços extras
                 alimentos = [x.strip() for x in nome.split(",")]
             
             calorias = data.get("quantidade_de_caloria", 0)
             carboidratos = data.get("quantidade_de_carboidrato", 0)
             insulina = data.get("quantidade_de_insulina_necessaria", 0)
         else:
-            # Formato antigo com lista de alimentos
+            # formato antigo com lista de alimentos
             alimentos = [item["nome"] for item in data.get("alimentos", [])]
             calorias = sum(item.get("calorias", 0) for item in data.get("alimentos", []))
             carboidratos = sum(item.get("carboidratos", 0) for item in data.get("alimentos", []))
@@ -79,11 +79,11 @@ descricao_alimentacao = """
 hoje de manhã comi um pão com uma maionese, e mais um ovo frito. 
 """
 
-# Montando JSON
+# montando JSON
 contexto_json = montar_json(medicamentos, bolus_alimentar, bolus_correcao, glicemia_atual, descricao_alimentacao)
 
 # ------------------------------
-# Papel da IA e instruções
+# Papel IA e instruções
 # ------------------------------
 papel_esperado_ia = """
 Você é nutricionista especializada em contagem de carboidratos, calorias e cálculo da insulina necessária
@@ -111,7 +111,7 @@ Resposta:
 """
 
 # ------------------------------
-# Chamada ao Gemini
+# Chamando Gemini
 # ------------------------------
 response = client.models.generate_content(
     model="gemini-2.5-flash",
