@@ -32,3 +32,41 @@ SONO:
   Mediana: 4.0
   Mínimo: 0.0
   Máximo: 5.0
+=======
+{
+  "GLICEMIA": {
+    "qtd_valores_validos": 700,
+    "media": 1.21,
+    "mediana": 1.0,
+    "minimo": 1.0,
+    "maximo": 2.0
+  },
+  "KCAL": {
+    "qtd_valores_validos": 724,
+    "media": 0.84,
+    "mediana": 1.0,
+    "minimo": 0,
+    "maximo": 2
+  },
+  "CARB": {
+    "qtd_valores_validos": 447,
+    "media": 1.85,
+    "mediana": 2.0,
+    "minimo": 0.0,
+    "maximo": 2.0
+  },
+  "INSULINA": {
+    "qtd_valores_validos": 724,
+    "media": 8.51,
+    "mediana": 8.0,
+    "minimo": 4,
+    "maximo": 12
+  },
+  "SONO": {
+    "qtd_valores_validos": 723,
+    "media": 3.92,
+    "mediana": 4.0,
+    "minimo": 0.0,
+    "maximo": 5.0
+  }
+}
