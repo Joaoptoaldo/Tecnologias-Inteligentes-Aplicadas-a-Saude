@@ -7,14 +7,18 @@ load_dotenv("C:/Users/user/Desktop/Tecnologias-Inteligentes-Aplicadas-a-Saude/tr
 api_key = os.getenv("COLOQUE_SUA_API_KEY_AQUI")
 print("Chave carregada:", api_key)
 
-# ------------------------------
-# Cliente 
-# ------------------------------
+'''
+------------------------------
+Cliente 
+------------------------------
+'''
 client = genai.Client(api_key="COLOQUE_SUA_API_KEY_AQUI")
 
-# ------------------------------
-# Função para montar JSON
-# ------------------------------
+'''
+------------------------------
+Função para montar JSON
+------------------------------
+'''
 def montar_json(medicamentos, bolus_alimentar, bolus_correcao, glicemia_atual, descricao_alimentacao):
     return {
         "medicamentos": medicamentos,
@@ -24,9 +28,11 @@ def montar_json(medicamentos, bolus_alimentar, bolus_correcao, glicemia_atual, d
         "descricao_alimentacao": descricao_alimentacao
     }
 
-# ------------------------------
-# Função para desmontar JSON ajustada para resposta da IA
-# ------------------------------
+'''
+------------------------------
+Função para desmontar JSON ajustada para resposta da IA
+------------------------------
+'''
 def desmontar_json(resposta_json):
     """
     Ajustada para lidar com:
@@ -39,7 +45,7 @@ def desmontar_json(resposta_json):
         
         data = json.loads(resposta_json)
         
-        # caso 'nome_do_alimento' exista
+        # caso nome_do_alimento exista
         if "nome_do_alimento" in data:
             nome = data["nome_do_alimento"]
             # se for lista, mantém, e se for string, transforma ela em lista
@@ -67,9 +73,11 @@ def desmontar_json(resposta_json):
 
 
 
-# ------------------------------
-# Variáveis de entrada
-# ------------------------------
+'''
+------------------------------
+Variáveis de entrada
+------------------------------
+'''
 medicamentos = ['novorapid', 'basaglar']
 bolus_alimentar = 15  # 15g de carboidrato por 1 unidade de insulina
 bolus_correcao = 60   # 60mg/dL por 1 unidade de insulina
@@ -82,9 +90,11 @@ hoje de manhã comi um pão com uma maionese, e mais um ovo frito.
 # montando JSON
 contexto_json = montar_json(medicamentos, bolus_alimentar, bolus_correcao, glicemia_atual, descricao_alimentacao)
 
-# ------------------------------
-# Papel IA e instruções
-# ------------------------------
+'''
+------------------------------
+Papel IA e instruções
+------------------------------
+'''
 papel_esperado_ia = """
 Você é nutricionista especializada em contagem de carboidratos, calorias e cálculo da insulina necessária
 com base na alimentação e nos níveis de glicose informados.
@@ -110,9 +120,11 @@ Resposta:
 {resposta_instrucao}
 """
 
-# ------------------------------
-# Chamando Gemini
-# ------------------------------
+'''
+------------------------------
+Chamando Gemini
+------------------------------
+'''
 response = client.models.generate_content(
     model="gemini-2.5-flash",
     contents=prompt
@@ -120,23 +132,29 @@ response = client.models.generate_content(
 
 resposta_json = response.candidates[0].content.parts[0].text.strip()
 
-# ------------------------------
-# Estimativa de tokens
-# ------------------------------
+'''
+------------------------------
+Estimativa de tokens
+------------------------------
+'''
 palavras = prompt.split() + resposta_json.split()
 tokens_estimados = int(len(palavras) * 1.33)
 print(f"Tokens estimados: {tokens_estimados}")
 
 print("Resposta JSON bruta da IA:\n", resposta_json)
 
-# ------------------------------
-# Processamento da resposta
-# ------------------------------
+'''
+------------------------------
+Processamento da resposta
+------------------------------
+'''
 lista_alimentos, calorias, carboidratos, qtd_insulina = desmontar_json(resposta_json)
 
-# ------------------------------
-# Resultado final
-# ------------------------------
+'''
+------------------------------
+Resultado final
+------------------------------
+'''
 print("\nLista de alimentos:", lista_alimentos)
 print("Total de calorias:", calorias)
 print("Total de carboidratos:", carboidratos)
