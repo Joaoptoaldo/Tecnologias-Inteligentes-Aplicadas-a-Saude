@@ -7,6 +7,7 @@ load_dotenv("C:/Users/user/Desktop/Tecnologias-Inteligentes-Aplicadas-a-Saude/tr
 api_key = os.getenv("COLOQUE_SUA_API_KEY_AQUI")
 print("Chave carregada!" if api_key else "Chave não encontrada!")
 
+
 '''
 ------------------------------
 Cliente 
