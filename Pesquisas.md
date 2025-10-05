@@ -1,4 +1,4 @@
-# Pesquisas e Trabalhos relacionados à saúde e tecnologia
+# Pesquisas e Trabalhos relacionados
 
 ---
 
