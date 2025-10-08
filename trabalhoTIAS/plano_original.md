@@ -38,7 +38,6 @@ Essa integração visa automatizar o cálculo de nutrientes e insulina com base 
 
  O dotenv carrega variáveis de ambiente armazenadas no arquivo .env, onde está a chave de API da IA.
  Essa chave é necessária para autenticar as requisições ao modelo Gemini.
- O trecho imprime se a chave foi carregada com sucesso.
 
 # 2. Instanciação do Cliente Gemini
     client = genai.Client(api_key="COLOQUE_SUA_API_KEY_AQUI")
@@ -55,6 +54,56 @@ Essa integração visa automatizar o cálculo de nutrientes e insulina com base 
            "glicemia_atual": glicemia_atual,
            "descricao_alimentacao": descricao_alimentacao
        }
+ Essa função cria um dicionário JSON com as informações do paciente e sua alimentação:
+
+  Campo	  Descrição
+medicamentos	Lista de insulinas utilizadas
+bolus_alimentar	Quantidade de carboidratos (g) que 1 unidade de insulina cobre
+bolus_correcao	Valor em mg/dL de glicose corrigido por 1 unidade de insulina
+glicemia_atual	Glicemia medida pelo paciente
+descricao_alimentacao	Texto livre descrevendo a refeição
+# 4. Função para Desmontar o JSON (resposta da IA)
+    def desmontar_json(resposta_json):
+    ...
 
 
+ Essa função interpreta o JSON retornado pela IA, tratando diferentes formatos possíveis de resposta.
+
+ Principais funcionalidades:
+
+ - Remove trechos de formatação (```json e ```).
+
+ - Converte texto JSON em objeto Python.
+
+ - Trata casos onde os alimentos vêm:
+
+   - Como lista (["pão", "ovo"])
+
+   - Ou como string ("pão, ovo")
+
+Extrai:
+
+  - Nome dos alimentos
+
+  - Quantidade de calorias
+
+  - Quantidade de carboidratos
+
+  - Quantidade de insulina necessária
+
+ Caso haja erro no formato, retorna valores padrão (vazios ou zero).
+
+# 5. Entradas do Sistema Local
+    medicamentos = ['novorapid', 'basaglar']
+    bolus_alimentar = 15
+    bolus_correcao = 60
+    glicemia_atual = 132
+    descricao_alimentacao = "hoje de manhã comi um pão com uma maionese, e mais um ovo frito."
+
+
+ Esses dados simulam as informações fornecidas pelo sistema local (ou pelo paciente).
+
+ Após isso, o JSON é montado:
+
+    contexto_json = montar_json(medicamentos, bolus_alimentar, bolus_correcao, glicemia_atual, descricao_al
 
