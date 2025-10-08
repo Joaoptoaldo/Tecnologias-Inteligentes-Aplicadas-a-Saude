@@ -54,14 +54,8 @@ Essa integração visa automatizar o cálculo de nutrientes e insulina com base 
            "glicemia_atual": glicemia_atual,
            "descricao_alimentacao": descricao_alimentacao
        }
- Essa função cria um dicionário JSON com as informações do paciente e sua alimentação:
-
-  Campo	  Descrição
-medicamentos	Lista de insulinas utilizadas
-bolus_alimentar	Quantidade de carboidratos (g) que 1 unidade de insulina cobre
-bolus_correcao	Valor em mg/dL de glicose corrigido por 1 unidade de insulina
-glicemia_atual	Glicemia medida pelo paciente
-descricao_alimentacao	Texto livre descrevendo a refeição
+ Essa função cria um dicionário JSON com as informações do paciente e sua alimentação.
+ 
 # 4. Função para Desmontar o JSON (resposta da IA)
     def desmontar_json(resposta_json):
     ...
