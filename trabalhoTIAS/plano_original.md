@@ -15,3 +15,5 @@
 	1- Paciente = (insulinas, g por insulina, unidade por glicemia)
 		
 	2- Alimentação = (texto puro, nome insulina, qtd de unidades)
+	
+Essa integração visa automatizar o cálculo de nutrientes e insulina com base na descrição textual da refeição feita pelo paciente.
