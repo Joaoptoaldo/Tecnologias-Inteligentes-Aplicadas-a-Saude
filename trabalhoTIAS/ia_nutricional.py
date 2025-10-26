@@ -1,162 +1,149 @@
-import json
-from google import genai
-from dotenv import load_dotenv
 import os
+import re
+import json
+from dotenv import load_dotenv
+from google import genai
 
-load_dotenv("C:/Users/user/Desktop/Tecnologias-Inteligentes-Aplicadas-a-Saude/trabalhoTIAS/.env")
-api_key = os.getenv("COLOQUE_SUA_API_KEY_AQUI")
-print("Chave carregada!" if api_key else "Chave não encontrada!")
+# Carrega .env (opcional: passe o caminho completo se necessário)
+# Ex: load_dotenv(r"C:\Users\user\Desktop\...\ .env")
+load_dotenv()  # chama sem argumento tenta carregar .env do diretório atual
 
+# Tente múltiplos nomes comuns para a variável de ambiente
+api_key = os.getenv("GEMINI_API_KEY") or os.getenv("COLOQUE_SUA_API_KEY_AQUI")
+if api_key:
+    print("Chave carregada!")
+else:
+    raise RuntimeError("Chave não encontrada! Defina GEMINI_API_KEY ou COLOQUE_SUA_API_KEY_AQUI no .env ou nas variáveis de ambiente.")
 
-'''
-------------------------------
-Cliente 
-------------------------------
-'''
-client = genai.Client(api_key="COLOQUE_SUA_API_KEY_AQUI")
+# Inicializa o client
+client = genai.Client(api_key=api_key)
 
-'''
-------------------------------
-Função para montar JSON
-------------------------------
-'''
 def montar_json(medicamentos, bolus_alimentar, bolus_correcao, glicemia_atual, descricao_alimentacao):
-    return {
+    dados = {
         "medicamentos": medicamentos,
-        "bolus_alimentar": bolus_alimentar,
-        "bolus_correcao": bolus_correcao,
-        "glicemia_atual": glicemia_atual,
-        "descricao_alimentacao": descricao_alimentacao
+        "parametros_insulina": {
+            "bolus_alimentar": {"carb_por_unidade_g": int(bolus_alimentar)},
+            "bolus_correcao": {"mg_dl_por_unidade": int(bolus_correcao)}
+        },
+        "medicoes": {
+            "glicemia_atual_mg_dl": int(glicemia_atual)
+        },
+        "alimentacao": {
+            "descricao": descricao_alimentacao.strip()
+        },
+        "instrucoes": "Responda apenas com JSON válido. Veja o schema em exemplo_json."
     }
+    return json.dumps(dados, ensure_ascii=False, indent=2)
 
-'''
-------------------------------
-Função para desmontar JSON ajustada para resposta da IA
-------------------------------
-'''
-def desmontar_json(resposta_json):
-    """
-    Ajustada para lidar com:
-    - JSON com 'nome_do_alimento' como lista ou string
-    - Remover backticks e espaços extras
-    """
+exemplo_json = {
+    "alimentos": [
+        {
+            "nome_do_alimento": "pão francês",
+            "quantidade_de_carboidrato_g": 30,
+            "quantidade_de_caloria_kcal": 150,
+            "quantidade_de_glicemia_enviada_mg_dl": 0,
+            "quantidade_de_insulina_necessaria_u": 2
+        }
+    ],
+    "resumo": {
+        "carboidratos_totais_g": 30,
+        "calorias_totais_kcal": 150,
+        "insulina_total_necessaria_u": 2
+    }
+}
+
+def limpar_json_da_ia(texto):
+    texto = texto.strip()
+    # Remove blocos de código ``` ou ```json
+    texto = re.sub(r"^```(?:json)?\s*", "", texto, flags=re.I)
+    texto = re.sub(r"\s*```$", "", texto)
+    # Extrai o primeiro objeto JSON {} ou array []
+    m_obj = re.search(r"(\{.*\})", texto, flags=re.S)
+    if m_obj:
+        return m_obj.group(1).strip()
+    m_arr = re.search(r"(\[.*\])", texto, flags=re.S)
+    if m_arr:
+        return m_arr.group(1).strip()
+    return texto
+
+def parsear_json_possivel(texto):
+    texto_limpo = limpar_json_da_ia(texto)
     try:
-        # remove backticks e palavra "json"
-        resposta_json = resposta_json.replace("```json", "").replace("```", "").strip()
-        
-        data = json.loads(resposta_json)
-        
-        # caso nome_do_alimento exista
-        if "nome_do_alimento" in data:
-            nome = data["nome_do_alimento"]
-            # se for lista, mantém, e se for string, transforma ela em lista
-            if isinstance(nome, list):
-                alimentos = nome
-            else:
-                # divide a string por vírgula e remove espaços extras
-                alimentos = [x.strip() for x in nome.split(",")]
-            
-            calorias = data.get("quantidade_de_caloria", 0)
-            carboidratos = data.get("quantidade_de_carboidrato", 0)
-            insulina = data.get("quantidade_de_insulina_necessaria", 0)
-        else:
-            # formato antigo com lista de alimentos
-            alimentos = [item["nome"] for item in data.get("alimentos", [])]
-            calorias = sum(item.get("calorias", 0) for item in data.get("alimentos", []))
-            carboidratos = sum(item.get("carboidratos", 0) for item in data.get("alimentos", []))
-            insulina = data.get("insulina_necessaria", 0)
-            
-        return alimentos, calorias, carboidratos, insulina
-    
+        return json.loads(texto_limpo)
     except Exception as e:
-        print("Erro ao desmontar JSON:", e)
-        return [], 0, 0, 0
+        # Falhou: incluir conteúdo limpo para depuração
+        raise ValueError(f"Falha ao converter resposta em JSON. Conteúdo recebido (limpo):\n{texto_limpo}\nErro: {e}")
 
+def contar_tokens_aproximado(texto):
+    # Aproximação simples: 1 token ≈ 4 caracteres
+    return max(1, int(len(texto) / 4))
 
-
-'''
-------------------------------
-Variáveis de entrada
-------------------------------
-'''
+# --- parâmetros de entrada ---
 medicamentos = ['novorapid', 'basaglar']
-bolus_alimentar = 15  # 15g de carboidrato por 1 unidade de insulina
-bolus_correcao = 60   # 60mg/dL por 1 unidade de insulina
+bolus_alimentar = 15
+bolus_correcao = 60
 glicemia_atual = 132
-
 descricao_alimentacao = """
-hoje de manhã comi um pão com uma maionese, e mais um ovo frito. 
+hoje de manhã comi um pão frances com uma fatia de queijo prato mais um ovo cozido. Também tomei um café com leite, mais café do que leite.
 """
 
-# montando JSON
 contexto_json = montar_json(medicamentos, bolus_alimentar, bolus_correcao, glicemia_atual, descricao_alimentacao)
-
-'''
-------------------------------
-Papel IA e instruções
-------------------------------
-'''
-papel_esperado_ia = """
-Você é nutricionista especializada em contagem de carboidratos, calorias e cálculo da insulina necessária
-com base na alimentação e nos níveis de glicose informados.
-"""
-
-resposta_instrucao = """
-Você deve retornar SOMENTE um JSON com:
-- nome do alimento
-- quantidade de carboidrato
-- quantidade de caloria
-- glicemia enviada
-- quantidade de insulina necessária
-"""
-
-prompt = f"""
-Papel:
-{papel_esperado_ia}
-
-Contexto:
-{json.dumps(contexto_json, indent=2, ensure_ascii=False)}
-
-Resposta:
-{resposta_instrucao}
-"""
-
-'''
-------------------------------
-Chamando Gemini
-------------------------------
-'''
-response = client.models.generate_content(
-    model="gemini-2.5-flash",
-    contents=prompt
+prompt = (
+    "Você é um nutricionista. Calcule carboidratos (g), calorias (kcal) e insulina necessária (U) "
+    "para a alimentação descrita. Retorne APENAS um JSON válido no formato do exemplo abaixo, sem texto adicional.\n\n"
+    f"Contexto:\n{contexto_json}\n\n"
+    f"Exemplo de saída JSON:\n{json.dumps(exemplo_json, ensure_ascii=False, indent=2)}\n\n"
+    "Responda agora com o JSON preenchido."
 )
 
-resposta_json = response.candidates[0].content.parts[0].text.strip()
+tokens_input = contar_tokens_aproximado(prompt)
 
-'''
-------------------------------
-Estimativa de tokens
-------------------------------
-'''
-palavras = prompt.split() + resposta_json.split()
-tokens_estimados = int(len(palavras) * 1.33)
-print(f"Tokens estimados: {tokens_estimados}")
+# Chamada ao modelo (determinística: temperature=0)
+try:
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt,
+        temperature=0.0,
+        max_output_tokens=800
+    )
+except Exception as e:
+    raise RuntimeError(f"Erro ao chamar a API do modelo: {e}")
 
-print("Resposta JSON bruta da IA:\n", resposta_json)
+# Extrair texto bruto de forma compatível com variações da SDK
+raw_text = None
+# Possíveis caminhos na resposta: adapte se sua versão SDK usa estrutura diferente
+try:
+    raw_text = response.candidates[0].content.parts[0].text
+except Exception:
+    try:
+        raw_text = response.output[0].content[0].text
+    except Exception:
+        # fallback: tentar imprimir objeto response para depuração
+        raise RuntimeError(f"Não foi possível localizar o texto da resposta da API. Resposta bruta: {response}")
 
-'''
-------------------------------
-Processamento da resposta
-------------------------------
-'''
-lista_alimentos, calorias, carboidratos, qtd_insulina = desmontar_json(resposta_json)
+resposta_json = raw_text.strip()
+tokens_output = contar_tokens_aproximado(resposta_json)
+tokens_total = tokens_input + tokens_output
 
-'''
-------------------------------
-Resultado final
-------------------------------
-'''
-print("\nLista de alimentos:", lista_alimentos)
-print("Total de calorias:", calorias)
-print("Total de carboidratos:", carboidratos)
-print("Quantidade de insulina necessária:", qtd_insulina)
+# Parse robusto
+dados = parsear_json_possivel(resposta_json)
+
+# Aceita dict com chave 'alimentos' ou lista direta
+if isinstance(dados, dict) and "alimentos" in dados:
+    alimentos = dados["alimentos"]
+elif isinstance(dados, list):
+    alimentos = dados
+else:
+    raise ValueError("Formato JSON inesperado. Esperado lista de alimentos ou dict com chave 'alimentos'.")
+
+# Imprime resultados
+for item in alimentos:
+    nome = item.get("nome_do_alimento")
+    carb = item.get("quantidade_de_carboidrato_g")
+    kcal = item.get("quantidade_de_caloria_kcal")
+    glic = item.get("quantidade_de_glicemia_enviada_mg_dl", 0)
+    insu = item.get("quantidade_de_insulina_necessaria_u")
+    print(f"Alimento: {nome!r}, Carboidratos: {carb}, Calorias: {kcal}, Glicemia enviada: {glic}, Insulina (U): {insu}")
+
+print("\nContagem de tokens (aprox.):")
+print(f"Input: {tokens_input}, Output: {tokens_output}, Total: {tokens_total}")
