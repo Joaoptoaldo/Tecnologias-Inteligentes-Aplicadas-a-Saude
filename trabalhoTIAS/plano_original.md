@@ -2,7 +2,6 @@
 
 -> Objetivo: 
       Integrar dados de um sistema local de saúde com uma camada de IA (Gemini ou OpenAI), utilizando **JSON como formato de troca de dados**.
-
 	Usúario / local
 	
     ->Sistema --------------> JSON ------> Gemini/OpenAi
@@ -99,5 +98,9 @@ Extrai:
 
  Após isso, o JSON é montado:
 
+<<<<<<< HEAD
     contexto_json = montar_json(medicamentos, bolus_alimentar, bolus_correcao, glicemia_atual, descricao_al
 
+=======
+    contexto_json = montar_json(medicamentos, bolus_alimentar, bolus_correcao, glicemia_atual, descricao_al)
+>>>>>>> dd5d2e1 (finaliza)
